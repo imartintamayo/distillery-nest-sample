@@ -1,0 +1,28 @@
+version: "3"
+
+services: 
+  distillery-sample:
+    container_name: distillery-sample
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "3000:3000"
+    links:
+        - distillery-mongo
+    volumes: 
+        - .:/usr/src/app
+        - /usr/src/app/dist
+        - /usr/src/app/node_modules
+  distillery-mongo:
+    container_name: distillery-mongo
+    image: mongo
+    ports: 
+        - "27017:27017"
+    logging:
+      driver: none
+    volumes:
+        - distillery-mongo-data:/data/db
+volumes:
+  distillery-mongo-data:
