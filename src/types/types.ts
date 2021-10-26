@@ -39,6 +39,6 @@ export interface DeleteOlderCarsResult {
 }
 
 export interface ApplyDiscountAndRemoveOlderCarsOwnersFromListResult {
-  deletedCars: DeleteOlderCarsResult;
+  removedOwners?: DeleteOlderCarsResult;
   updatedCars: ApplyDiscountToCarsResult;
 }

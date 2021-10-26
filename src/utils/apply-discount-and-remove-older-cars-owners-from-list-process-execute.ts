@@ -155,11 +155,11 @@ const applyDiscountToCarsWithFirstRegistrationDateBetween = async ({
 export const applyDiscountAndRemoveOlderCarsOwnersFromListProcess = async (
   config: ApplyDiscountAndRemoveOlderCarsOwnersFromListConfig,
 ): Promise<ApplyDiscountAndRemoveOlderCarsOwnersFromListResult> => {
-  const deletedCars = await removeCarsOwnersWithPurchaseDateOlderThan(config);
+  // const removedOwners = await removeCarsOwnersWithPurchaseDateOlderThan(config);
   const updatedCars = await applyDiscountToCarsWithFirstRegistrationDateBetween(config);
 
   return {
-    deletedCars,
+    // removedOwners,
     updatedCars,
   };
 };
