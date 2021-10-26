@@ -7,6 +7,7 @@ import { ManufacturersService } from '../manufacturers/manufacturers.service';
 import { CarNotFoundException } from './errors/CarNotFoundException.error';
 import { CreateCarDto, UpdateCarDto } from './dto/car.dto';
 import { ManufacturerNotFoundException } from '../manufacturers/errors/ManufacturerNotFoundException.error';
+import { OwnersService } from '../owners/owners.service';
 
 // this is to create a reference to this method out of the manufacturer model instance
 const save = jest.fn();
@@ -15,6 +16,7 @@ describe('CarsService', () => {
   let carService: CarsService;
   let carModel: Model<CarDocument>;
   let manufacturersService: ManufacturersService;
+  let ownersService: OwnersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +25,10 @@ describe('CarsService', () => {
         {
           provide: ManufacturersService,
           useValue: MockManufacturersService,
+        },
+        {
+          provide: OwnersService,
+          useValue: MockOwnersService,
         },
         {
           provide: getModelToken(Car.name),
@@ -172,6 +178,26 @@ describe('CarsService', () => {
         _id: 'some manufacturer id',
       });
 
+      save.mockResolvedValue({
+        _id: 'some new car id',
+      });
+
+      const sampleCar = {
+        price: 10,
+        manufacturer: {
+          name: 'some name',
+          siret: 1234,
+          phone: 'some phone',
+        },
+        firstRegistrationDate: new Date(),
+        owners: [],
+      };
+      MockCarsModel.findById.mockImplementation(() => ({
+        populate: jest.fn().mockImplementation(() => ({
+          exec: jest.fn().mockResolvedValue(sampleCar),
+        })),
+      }));
+
       await carService.createCar(carDto);
 
       expect(MockManufacturersService.findManufacturerBySiret).toBeCalledTimes(1);
@@ -246,6 +272,11 @@ describe('CarsService', () => {
         _id: manufacturerId,
       });
 
+      const ownerId = 'some owner id';
+      MockOwnersService.getOwnerById.mockResolvedValue({
+        _id: ownerId,
+      });
+
       const carId = 'some car id';
       await carService.updateCarById(carId, carDto);
 
@@ -260,6 +291,7 @@ describe('CarsService', () => {
       const dataToSet = {
         ...carDto,
         manufacturer: manufacturerId,
+        owners: [ownerId, ownerId]
       };
       expect(MockCarsModel.updateOne).toBeCalledTimes(1);
       expect(MockCarsModel.updateOne).toBeCalledWith(
@@ -397,6 +429,11 @@ describe('CarsService', () => {
         exec: jest.fn(),
       }));
 
+      const ownerId = 'some owner id';
+      MockOwnersService.getOwnerById.mockResolvedValue({
+        _id: ownerId,
+      });
+
       const carId = 'some car id';
       await carService.updateCarById(carId, carDto);
 
@@ -410,6 +447,7 @@ describe('CarsService', () => {
 
       const dataToSet = {
         ...carDto,
+        owners: [ownerId, ownerId]
       };
       expect(MockCarsModel.updateOne).toBeCalledTimes(1);
       expect(MockCarsModel.updateOne).toBeCalledWith(
@@ -547,6 +585,8 @@ describe('CarsService', () => {
 function MockManufacturersService() {}
 MockManufacturersService.findManufacturerBySiret = jest.fn();
 
+function MockOwnersService() {}
+MockOwnersService.getOwnerById = jest.fn();
 function MockCarsModel() {
   this.save = save;
 }

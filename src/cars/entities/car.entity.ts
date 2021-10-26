@@ -1,18 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Manufacturer } from '../../manufacturers/entities/manufacturer.entity';
 import { CarDocument } from '../schemas/car.schema';
-import { ManufacturerDocument } from '../../manufacturers/schemas/manufacturer.schema';
-import { Manufacturer as ManufacturerEntity } from '../../manufacturers/entities/manufacturer.entity';
+import { Manufacturer } from '../../manufacturers/entities/manufacturer.entity';
+import { Owner } from '../../owners/entities/owner.entity';
 
 export class Car {
-  constructor(car?: CarDocument, manufacturer?: ManufacturerDocument) {
+  constructor(car?: CarDocument) {
     this.id = car?._id;
-    this.manufacturer = new ManufacturerEntity(
-      manufacturer ? manufacturer : car?.manufacturer,
-    );
+    this.manufacturer = new Manufacturer(car?.manufacturer);
     this.price = car?.price;
     this.firstRegistrationDate = car?.firstRegistrationDate;
-    this.owners = car?.owners;
+    this.owners = car?.owners.map(owner => new Owner(owner));
   }
 
   @ApiProperty({ example: 'someId', description: 'The id of the Car' })
@@ -34,8 +31,8 @@ export class Car {
   firstRegistrationDate: Date;
 
   @ApiProperty({
-    example: ['owner1', 'owner2'],
+    example: [{ id: 'some id1', name: 'some owner name1', purchaseDate: 'some date' }, { id: 'some id2', name: 'some owner name2', purchaseDate: 'some date' }],
     description: 'The owners of the Car',
   })
-  owners?: string[] = [];
+  owners?: Owner[] = [];
 }

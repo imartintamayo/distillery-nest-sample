@@ -16,20 +16,22 @@ import { CarNotFoundException } from './errors/CarNotFoundException.error';
 import { ManufacturersService } from '../manufacturers/manufacturers.service';
 import { Manufacturer as ManufacturerEntity } from '../manufacturers/entities/manufacturer.entity';
 import { ManufacturerNotFoundException } from '../manufacturers/errors/ManufacturerNotFoundException.error';
+import { OwnersService } from '../owners/owners.service';
 
 @Injectable()
 export class CarsService {
   constructor(
     @InjectModel(Car.name) private carModel: Model<CarDocument>,
     private manufacturerService: ManufacturersService,
+    private ownersService: OwnersService,
   ) {}
 
   private _findCarById(carId: string): Promise<CarDocument> {
-    return this.carModel.findById(carId).populate('manufacturer').exec();
+    return this.carModel.findById(carId).populate(['manufacturer', 'owners']).exec();
   }
 
   private _findCars(): Promise<CarDocument[]> {
-    return this.carModel.find().populate('manufacturer').exec();
+    return this.carModel.find().populate(['manufacturer', 'owners']).exec();
   }
 
   private _saveCar(car: Car): Promise<CarDocument> {
@@ -87,18 +89,24 @@ export class CarsService {
   }
 
   async createCar(createCarDto: CreateCarDto): Promise<CarEntity> {
-    const siret = createCarDto.manufacturer;
+    const { manufacturer: siret, owners: ownerIds, ...dataToSet } = createCarDto;
     const manufacturer = await this.manufacturerService.findManufacturerBySiret(siret);
 
     if (!manufacturer) {
       throw new ManufacturerNotFoundException(siret);
     }
 
-    const car = await this._saveCar({
-      ...createCarDto,
+    if (ownerIds) {
+      const owners = await Promise.all(ownerIds.map(ownerId => this.ownersService.getOwnerById(ownerId)));
+      Object.assign(dataToSet, { owners: owners.map(owner => owner._id) });
+    }
+
+    let car = await this._saveCar({
+      ...dataToSet,
       manufacturer: manufacturer._id,
     });
-    return new CarEntity(car, manufacturer);
+    car = await this._findCarById(car._id);
+    return new CarEntity(car);
   }
 
   async updateCarById(
@@ -111,7 +119,7 @@ export class CarsService {
       throw new CarNotFoundException(carId);
     }
 
-    const { manufacturer: siret, ...dataToSet } = updateCarDto;
+    const { manufacturer: siret, owners: ownerIds, ...dataToSet } = updateCarDto;
     const manufacturer = await this.manufacturerService.findManufacturerBySiret(siret);
 
     if (siret && !manufacturer) {
@@ -120,6 +128,11 @@ export class CarsService {
 
     if (manufacturer) {
       Object.assign(dataToSet, { manufacturer: manufacturer._id });
+    }
+
+    if (ownerIds) {
+      const owners = await Promise.all(ownerIds.map(ownerId => this.ownersService.getOwnerById(ownerId)));
+      Object.assign(dataToSet, { owners: owners.map(owner => owner._id) });
     }
 
     await this._updateCarById(carId, dataToSet);

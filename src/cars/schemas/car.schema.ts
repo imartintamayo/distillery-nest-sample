@@ -5,6 +5,10 @@ import {
   ManufacturerDocument,
   Manufacturer,
 } from '../../manufacturers/schemas/manufacturer.schema';
+import {
+  OwnerDocument,
+  Owner,
+} from '../../owners/schemas/owner.schema';
 
 @Schema()
 export class Car {
@@ -17,8 +21,8 @@ export class Car {
   @Prop()
   firstRegistrationDate: Date;
 
-  @Prop({ type: [String], default: [] })
-  owners?: string[];
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: Owner.name, default: [] })
+  owners?: OwnerDocument[];
 }
 
 export type CarDocument = Car & Document;

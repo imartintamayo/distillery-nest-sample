@@ -3,9 +3,16 @@ import { OwnerDocument } from '../schemas/owner.schema';
 
 export class Owner {
   constructor(owner?: OwnerDocument) {
+    this.id = owner?._id;
     this.name = owner?.name;
     this.purchaseDate = owner?.purchaseDate;
   }
+
+  @ApiProperty({
+    example: 'some id',
+    description: 'The Owner\'s id',
+  })
+  id: string;
 
   @ApiProperty({
     example: 'some name',

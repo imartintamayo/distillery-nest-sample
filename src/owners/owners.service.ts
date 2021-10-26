@@ -26,14 +26,14 @@ export class OwnersService {
     return this.ownerModel.findById(ownerId).exec();
   }
 
-  async getOwnerById(ownerId: string): Promise<OwnerEntity> {
+  async getOwnerById(ownerId: string): Promise<OwnerDocument> {
     const owner = await this._findOwnerById(ownerId);
 
     if (!owner) {
       throw new OwnerNotFoundException(ownerId);
     }
 
-    return new OwnerEntity(owner);
+    return owner;
   }
 
   async getOwners(): Promise<OwnerEntity[]> {
