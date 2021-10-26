@@ -30,7 +30,7 @@ describe('CarsController', () => {
     MockCarService.createCar.mockRestore();
     MockCarService.updateCarById.mockRestore();
     MockCarService.deleteCarById.mockRestore();
-    MockCarService.triggerApplyDiscountAndDeleteOlderCarsProcess.mockRestore();
+    MockCarService.triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess.mockRestore();
   });
 
   it('should be defined', () => {
@@ -152,9 +152,9 @@ describe('CarsController', () => {
 
   describe('post trigger apply discount and delete older cars process "/trigger-apply-discount-and-delete-older-cars-process"', () => {
     it('201 OK', async () => {
-      await controller.triggerApplyDiscountAndDeleteOlderCarsProcess();
+      await controller.triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess();
       expect(
-        carsService.triggerApplyDiscountAndDeleteOlderCarsProcess,
+        carsService.triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess,
       ).toBeCalledTimes(1);
     });
   });
@@ -167,4 +167,4 @@ MockCarService.getCarManufacturerByCarId = jest.fn();
 MockCarService.createCar = jest.fn();
 MockCarService.updateCarById = jest.fn();
 MockCarService.deleteCarById = jest.fn();
-MockCarService.triggerApplyDiscountAndDeleteOlderCarsProcess = jest.fn();
+MockCarService.triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess = jest.fn();

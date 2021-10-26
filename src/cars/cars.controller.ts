@@ -116,10 +116,10 @@ export class CarsController {
     return this.carsService.deleteCarById(carId);
   }
 
-  @Post('trigger-apply-discount-and-delete-older-cars-process')
+  @Post('trigger-apply-discount-and-remove-older-cars-owners--from-list-process')
   @ApiOperation({
-    summary: `Trigger a process which will automatically remove the cars having a release date older than 18 months
-              and apply a discount of 20% to all cars having a release date between 12 and 18 months.`,
+    summary: `Trigger a process which will automatically remove the owners who bought their cars before the last 
+    18 months and apply a discount of 20% to all cars having a date of first registration between 12 and 18 months.`,
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -129,7 +129,7 @@ export class CarsController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Internal server error',
   })
-  triggerApplyDiscountAndDeleteOlderCarsProcess() {
-    return this.carsService.triggerApplyDiscountAndDeleteOlderCarsProcess();
+  triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess() {
+    return this.carsService.triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess();
   }
 }

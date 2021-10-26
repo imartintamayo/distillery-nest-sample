@@ -5,13 +5,12 @@ import { Car, CarDocument } from './schemas/car.schema';
 import { CreateCarDto, UpdateCarDto } from './dto/car.dto';
 import { Car as CarEntity } from './entities/car.entity';
 import {
-  ApplyDiscountAndDeleteOlderCarsConfig,
-  ApplyDiscountAndDeleteOlderCarsResult,
+  ApplyDiscountAndRemoveOlderCarsOwnersFromListConfig,
+  ApplyDiscountAndRemoveOlderCarsOwnersFromListResult,
   DeleteWriteOpResult,
   UpdateWriteOpResult,
 } from '../types/types';
-import { ApplyDiscountAndDeleteOlderCars } from './entities/apply-discount-and-delete-older-cars.entity';
-import { applyDiscountAndDeleteOlderCarsProcess } from '../utils/apply-discount-and-delete-older-cars-process-execute';
+import { applyDiscountAndRemoveOlderCarsOwnersFromListProcess } from '../utils/apply-discount-and-remove-older-cars-owners-from-list-process-execute';
 import { CarNotFoundException } from './errors/CarNotFoundException.error';
 import { ManufacturersService } from '../manufacturers/manufacturers.service';
 import { Manufacturer as ManufacturerEntity } from '../manufacturers/entities/manufacturer.entity';
@@ -152,15 +151,15 @@ export class CarsService {
     return new CarEntity(car);
   }
 
-  async triggerApplyDiscountAndDeleteOlderCarsProcess() {
-    const config: ApplyDiscountAndDeleteOlderCarsConfig = {
+  async triggerApplyDiscountAndRemoveOlderCarsOwnersFromListProcess() {
+    const config: ApplyDiscountAndRemoveOlderCarsOwnersFromListConfig = {
       carModel: this.carModel,
-      releaseDate: new Date(),
+      firstRegistrationDate: new Date(),
       discountPercent: 20,
-      applyToCarsWithReleaseDateMinusMonthsStart: 12,
-      applyToCarsWithReleaseDateMinusMonthsEnd: 18,
+      applyToCarsWithFirstRegistrationDateMinusMonthsStart: 12,
+      applyToCarsWithFirstRegistrationDateMinusMonthsEnd: 18,
     };
-    const result: ApplyDiscountAndDeleteOlderCarsResult = await applyDiscountAndDeleteOlderCarsProcess(
+    const result: ApplyDiscountAndRemoveOlderCarsOwnersFromListResult = await applyDiscountAndRemoveOlderCarsOwnersFromListProcess(
       config,
     );
     return result;

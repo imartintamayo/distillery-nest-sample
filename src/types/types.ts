@@ -1,15 +1,15 @@
 import { Model } from 'mongoose';
 import { CarDocument } from '../cars/schemas/car.schema';
 
-export interface ApplyDiscountAndDeleteOlderCarsConfig {
+export interface ApplyDiscountAndRemoveOlderCarsOwnersFromListConfig {
   carModel: Model<CarDocument>;
-  releaseDate: Date;
+  firstRegistrationDate: Date;
   discountPercent: number;
-  applyToCarsWithReleaseDateMinusMonthsStart: number;
-  applyToCarsWithReleaseDateMinusMonthsEnd: number;
+  applyToCarsWithFirstRegistrationDateMinusMonthsStart: number;
+  applyToCarsWithFirstRegistrationDateMinusMonthsEnd: number;
 }
 
-export interface ReleaseDateFilter {
+export interface FirstRegistrationDateFilter {
   $lt?: Date;
   $lte?: Date;
   $gte?: Date;
@@ -34,11 +34,11 @@ export interface ApplyDiscountToCarsResult {
 }
 
 export interface DeleteOlderCarsResult {
-  deletedCars: CarDocument[];
+  removedOwners: CarDocument[];
   result: DeleteWriteOpResult;
 }
 
-export interface ApplyDiscountAndDeleteOlderCarsResult {
+export interface ApplyDiscountAndRemoveOlderCarsOwnersFromListResult {
   deletedCars: DeleteOlderCarsResult;
   updatedCars: ApplyDiscountToCarsResult;
 }
